@@ -1,0 +1,41 @@
+// Prisma schema for Beautiful Mindmap
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  mindmaps      Mindmap[]
+}
+
+model Mindmap {
+  id          String   @id @default(cuid())
+  title       String
+  nodes       Json     // Store the entire nodes object
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  shares      SharedMindmap[]
+}
+
+model SharedMindmap {
+  id          String   @id @default(cuid())
+  mindmapId   String
+  mindmap     Mindmap  @relation(fields: [mindmapId], references: [id], onDelete: Cascade)
+  sharedWith  String   // Email of the person shared with
+  canEdit     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  @@unique([mindmapId, sharedWith])
+}

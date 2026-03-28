@@ -1,5 +1,0 @@
-mkdir "C:\Users\ADMIN\.openclaw\workspace\beautiful-mindmap-saas\docs"
-mkdir "C:\Users\ADMIN\.openclaw\workspace\beautiful-mindmap-saas\tasks"
-mkdir "C:\Users\ADMIN\.openclaw\workspace\beautiful-mindmap-saas\prompts"
-mkdir "C:\Users\ADMIN\.openclaw\workspace\beautiful-mindmap-saas\src"
-mkdir "C:\Users\ADMIN\.openclaw\workspace\beautiful-mindmap-saas\tests"
