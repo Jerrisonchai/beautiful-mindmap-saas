@@ -11,16 +11,27 @@ const PORT = parseInt(process.env.PORT || '3000', 10);
 
 app.prepare().then(() => {
   const server = createServer((req, res) => {
-    // Don't interfere with WebSocket upgrade requests
-    if (req.headers.upgrade && req.headers.upgrade.toLowerCase() === 'websocket') {
-      return;
-    }
-    
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
   });
 
-  const wss = new WebSocketServer({ server, path: '/ws' });
+  const wss = new WebSocketServer({ noServer: true });
+
+  server.on('upgrade', (req, socket, head) => {
+    const { pathname } = parse(req.url, true);
+    if (pathname === '/ws') {
+      wss.handleUpgrade(req, socket, head, (ws) => {
+        wss.emit('connection', ws, req);
+      });
+    } else {
+      // Forward other WebSocket upgrades (like Next.js HMR) to Next.js
+      if (app.getUpgradeHandler) {
+        app.getUpgradeHandler()(req, socket, head);
+      } else {
+        socket.destroy();
+      }
+    }
+  });
 
   // Store connected clients and their mindmap sessions
   const sessions = {};
