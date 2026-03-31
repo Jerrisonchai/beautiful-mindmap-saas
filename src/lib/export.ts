@@ -47,12 +47,11 @@ export const exportToPNG = async (canvasRef: React.RefObject<HTMLDivElement>, mi
 };
 
 export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = 'mindmap') => {
-  const svgWidth = 2000;
-  const svgHeight = 1500;
+  const nodesArray = Object.values(nodes);
   
-  // Calculate bounds
+  // Calculate bounds in first pass
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  Object.values(nodes).forEach((node: any) => {
+  nodesArray.forEach((node: any) => {
     if (node.x < minX) minX = node.x;
     if (node.y < minY) minY = node.y;
     if (node.x > maxX) maxX = node.x;
@@ -65,22 +64,26 @@ export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = '
   const offsetX = minX - padding;
   const offsetY = minY - padding;
 
-  let svgContent = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-      <style>
-        .node-rect { rx: 10; ry: 10; stroke-width: 2; }
-        .node-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; dominant-baseline: middle; }
-        .connection { stroke-width: 3; stroke-linecap: round; }
-      </style>
-      <rect width="100%" height="100%" fill="white"/>
-  `;
+  const svgParts: string[] = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
+    `  <style>`,
+    `    .node-rect { rx: 10; ry: 10; stroke-width: 2; }`,
+    `    .node-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; dominant-baseline: middle; }`,
+    `    .connection { stroke-width: 3; stroke-linecap: round; }`,
+    `  </style>`,
+    `  <rect width="100%" height="100%" fill="white"/>`
+  ];
 
-  // Draw connections first
-  Object.values(nodes).forEach((node: any) => {
+  const connections: string[] = [];
+  const nodesSvg: string[] = [];
+
+  // Second pass: Generate connections and nodes SVG
+  nodesArray.forEach((node: any) => {
+    // Process connections
     node.children.forEach((childId: string) => {
       const child = nodes[childId];
       if (child) {
-        svgContent += `
+        connections.push(`
           <line 
             x1="${(node.x - offsetX)}" 
             y1="${(node.y - offsetY)}" 
@@ -90,19 +93,17 @@ export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = '
             stroke="${node.color}" 
             opacity="0.6"
           />
-        `;
+        `);
       }
     });
-  });
 
-  // Draw nodes
-  Object.values(nodes).forEach((node: any) => {
+    // Process nodes
     const x = node.x - offsetX;
     const y = node.y - offsetY;
-    const textWidth = node.text.length * 9 + 40; // Approximate width
+    const textWidth = node.text.length * 9 + 40;
     const textHeight = 40;
 
-    svgContent += `
+    nodesSvg.push(`
       <rect 
         x="${x - textWidth / 2}" 
         y="${y - textHeight / 2}" 
@@ -119,10 +120,10 @@ export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = '
       >
         ${node.text}
       </text>
-    `;
+    `);
   });
 
-  svgContent += '</svg>';
+  const svgContent = svgParts.concat(connections, nodesSvg, ['</svg>']).join('\n');
 
   const blob = new Blob([svgContent], { type: 'image/svg+xml' });
   const url = URL.createObjectURL(blob);
