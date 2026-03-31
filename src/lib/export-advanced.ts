@@ -1,5 +1,6 @@
 import { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType } from 'docx'
 import { PPTX } from 'pptxjs'
+import { escapeXml } from './utils/security'
 
 // Export to Markdown
 export const exportToMarkdown = (nodes: Record<string, any>, filename: string = 'mindmap') => {
@@ -10,7 +11,7 @@ export const exportToMarkdown = (nodes: Record<string, any>, filename: string = 
     if (!node) return
     
     const indent = '  '.repeat(depth)
-    lines.push(`${indent}- ${node.text}`)
+    lines.push(`${indent}- ${escapeXml(node.text)}`)
     
     if (node.children && node.children.length > 0) {
       node.children.forEach((childId: string) => {
@@ -22,9 +23,9 @@ export const exportToMarkdown = (nodes: Record<string, any>, filename: string = 
   // Start from root
   const rootId = Object.keys(nodes)[0]
   if (rootId) {
-    lines.push(`# ${nodes[rootId].text}`)
+    lines.push(`# ${escapeXml(nodes[rootId].text)}`)
     lines.push('')
-    node.children.forEach((childId: string) => {
+    nodes[rootId].children.forEach((childId: string) => {
       traverse(childId, 0)
     })
   }

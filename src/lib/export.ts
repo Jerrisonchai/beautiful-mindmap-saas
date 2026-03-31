@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { escapeXml } from './utils/security';
 
 export const exportToPDF = async (canvasRef: React.RefObject<HTMLDivElement>, mindmapTitle: string = 'Mindmap') => {
   if (!canvasRef.current) return;
@@ -87,7 +88,7 @@ export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = '
             x2="${(child.x - offsetX)}" 
             y2="${(child.y - offsetY)}" 
             class="connection" 
-            stroke="${node.color}" 
+            stroke="${escapeXml(node.color)}"
             opacity="0.6"
           />
         `;
@@ -108,7 +109,7 @@ export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = '
         y="${y - textHeight / 2}" 
         width="${textWidth}" 
         height="${textHeight}" 
-        fill="${node.color}" 
+        fill="${escapeXml(node.color)}"
         class="node-rect"
       />
       <text 
@@ -117,7 +118,7 @@ export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = '
         class="node-text" 
         fill="white"
       >
-        ${node.text}
+        ${escapeXml(node.text)}
       </text>
     `;
   });
