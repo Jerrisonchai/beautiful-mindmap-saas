@@ -1,8 +1,9 @@
 import { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType } from 'docx'
 import { PPTX } from 'pptxjs'
+import { MindmapNode } from '@/types'
 
 // Export to Markdown
-export const exportToMarkdown = (nodes: Record<string, any>, filename: string = 'mindmap') => {
+export const exportToMarkdown = (nodes: Record<string, MindmapNode>, filename: string = 'mindmap') => {
   const lines: string[] = []
   
   const traverse = (nodeId: string, depth: number = 0) => {
@@ -40,7 +41,7 @@ export const exportToMarkdown = (nodes: Record<string, any>, filename: string = 
 }
 
 // Export to Word Document
-export const exportToWord = async (nodes: Record<string, any>, filename: string = 'mindmap') => {
+export const exportToWord = async (nodes: Record<string, MindmapNode>, filename: string = 'mindmap') => {
   const { Document: Doc, Packer } = await import('docx')
 
   const children: any[] = []
@@ -89,7 +90,7 @@ export const exportToWord = async (nodes: Record<string, any>, filename: string 
 }
 
 // Export to PowerPoint Presentation
-export const exportToPowerPoint = async (nodes: Record<string, any>, filename: string = 'mindmap') => {
+export const exportToPowerPoint = async (nodes: Record<string, MindmapNode>, filename: string = 'mindmap') => {
   const pptx = new PPTX()
   
   // Create title slide
@@ -146,7 +147,7 @@ export const exportToPowerPoint = async (nodes: Record<string, any>, filename: s
 }
 
 // Export to JSON (enhanced with metadata)
-export const exportToJSONEnhanced = (nodes: Record<string, any>, filename: string = 'mindmap') => {
+export const exportToJSONEnhanced = (nodes: Record<string, MindmapNode>, filename: string = 'mindmap') => {
   const exportData = {
     metadata: {
       title: nodes[Object.keys(nodes)[0]]?.text || 'Untitled',
@@ -172,7 +173,7 @@ export const exportToJSONEnhanced = (nodes: Record<string, any>, filename: strin
 }
 
 // Batch export multiple mindmaps
-export const exportBatch = async (mindmaps: Array<{title: string, nodes: any}>, format: 'md' | 'docx' | 'pptx' | 'json') => {
+export const exportBatch = async (mindmaps: Array<{title: string, nodes: Record<string, MindmapNode>}>, format: 'md' | 'docx' | 'pptx' | 'json') => {
   // For now, we'll create a ZIP file with all exports
   // In a full implementation, you'd use JSZip library
   

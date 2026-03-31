@@ -8,16 +8,7 @@ import { exportToMarkdown, exportToWord, exportToPowerPoint, exportToJSONEnhance
 import { applyTemplate } from '@/lib/templates'
 import TemplateSelector from '@/components/TemplateSelector'
 import { useAuth } from '@/contexts/AuthContext'
-
-interface Node {
-  id: string
-  x: number
-  y: number
-  text: string
-  children: string[]
-  color: string
-  expanded: boolean
-}
+import { MindmapNode } from '@/types'
 
 const COLORS = [
   '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
@@ -25,7 +16,7 @@ const COLORS = [
 ]
 
 export default function MindmapEditor() {
-  const [nodes, setNodes] = useState<Record<string, Node>>({
+  const [nodes, setNodes] = useState<Record<string, MindmapNode>>({
     'root': {
       id: 'root',
       x: 0,
@@ -166,7 +157,7 @@ export default function MindmapEditor() {
     broadcastUpdate(newNodes)
   }, [nodes])
 
-  const broadcastUpdate = useCallback((newNodes: Record<string, Node>) => {
+  const broadcastUpdate = useCallback((newNodes: Record<string, MindmapNode>) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({ type: 'update', data: { nodes: newNodes }, userId: userId.current }))
     }

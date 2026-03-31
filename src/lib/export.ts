@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { MindmapNode } from '@/types';
 
 export const exportToPDF = async (canvasRef: React.RefObject<HTMLDivElement>, mindmapTitle: string = 'Mindmap') => {
   if (!canvasRef.current) return;
@@ -46,13 +47,13 @@ export const exportToPNG = async (canvasRef: React.RefObject<HTMLDivElement>, mi
   }
 };
 
-export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = 'mindmap') => {
+export const exportToSVG = (nodes: Record<string, MindmapNode>, mindmapTitle: string = 'mindmap') => {
   const svgWidth = 2000;
   const svgHeight = 1500;
   
   // Calculate bounds
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  Object.values(nodes).forEach((node: any) => {
+  Object.values(nodes).forEach((node) => {
     if (node.x < minX) minX = node.x;
     if (node.y < minY) minY = node.y;
     if (node.x > maxX) maxX = node.x;
@@ -133,7 +134,7 @@ export const exportToSVG = (nodes: Record<string, any>, mindmapTitle: string = '
   URL.revokeObjectURL(url);
 };
 
-export const exportToJSON = (nodes: Record<string, any>, mindmapTitle: string = 'mindmap') => {
+export const exportToJSON = (nodes: Record<string, MindmapNode>, mindmapTitle: string = 'mindmap') => {
   const data = JSON.stringify(nodes, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
