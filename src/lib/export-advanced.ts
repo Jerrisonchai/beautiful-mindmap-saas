@@ -22,11 +22,14 @@ export const exportToMarkdown = (nodes: Record<string, any>, filename: string = 
   // Start from root
   const rootId = Object.keys(nodes)[0]
   if (rootId) {
-    lines.push(`# ${nodes[rootId].text}`)
+    const rootNode = nodes[rootId]
+    lines.push(`# ${rootNode.text}`)
     lines.push('')
-    node.children.forEach((childId: string) => {
-      traverse(childId, 0)
-    })
+    if (rootNode.children) {
+      rootNode.children.forEach((childId: string) => {
+        traverse(childId, 0)
+      })
+    }
   }
 
   const markdown = lines.join('\n')
