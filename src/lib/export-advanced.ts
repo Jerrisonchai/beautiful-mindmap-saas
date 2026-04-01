@@ -43,7 +43,7 @@ export const exportToMarkdown = (nodes: Record<string, any>, filename: string = 
 export const exportToWord = async (nodes: Record<string, any>, filename: string = 'mindmap') => {
   const { Document: Doc, Packer } = await import('docx')
 
-  const children: any[] = []
+  const children: (Paragraph | Table)[] = []
   
   const traverse = (nodeId: string, depth: number = 0) => {
     const node = nodes[nodeId]
@@ -52,9 +52,9 @@ export const exportToWord = async (nodes: Record<string, any>, filename: string 
     children.push(
       new Paragraph({
         text: node.text,
-        level: depth === 0 ? HeadingLevel.HEADING_1 : 
-               depth === 1 ? HeadingLevel.HEADING_2 : 
-               depth === 2 ? HeadingLevel.HEADING_3 : HeadingLevel.NORMAL,
+        heading: depth === 0 ? HeadingLevel.HEADING_1 :
+                 depth === 1 ? HeadingLevel.HEADING_2 :
+                 depth === 2 ? HeadingLevel.HEADING_3 : undefined,
         spacing: { before: 200, after: 200 },
         alignment: depth === 0 ? AlignmentType.CENTER : AlignmentType.LEFT,
       })
