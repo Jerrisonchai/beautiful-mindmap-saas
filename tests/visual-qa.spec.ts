@@ -49,7 +49,7 @@ test('Beautiful Mindmap - Visual QA & Debug', async ({ page }) => {
     const pdfOption = page.getByText('PDF Document');
     const pngOption = page.getByText('PNG Image');
     const svgOption = page.getByText('SVG Vector');
-    const jsonOption = page.getByText('JSON Data');
+    const jsonOption = page.getByText('JSON (Enhanced)');
     
     await expect(pdfOption).toBeVisible();
     await expect(pngOption).toBeVisible();

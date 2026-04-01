@@ -1,5 +1,5 @@
 import { Document, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType } from 'docx'
-import { PPTX } from 'pptxjs'
+import PptxGenJS from 'pptxgenjs'
 
 // Export to Markdown
 export const exportToMarkdown = (nodes: Record<string, any>, filename: string = 'mindmap') => {
@@ -90,7 +90,7 @@ export const exportToWord = async (nodes: Record<string, any>, filename: string 
 
 // Export to PowerPoint Presentation
 export const exportToPowerPoint = async (nodes: Record<string, any>, filename: string = 'mindmap') => {
-  const pptx = new PPTX()
+  const pptx = new PptxGenJS()
   
   // Create title slide
   const titleNode = nodes[Object.keys(nodes)[0]]
@@ -148,21 +148,16 @@ export const exportToPowerPoint = async (nodes: Record<string, any>, filename: s
 // Export to JSON (enhanced with metadata)
 export const exportToJSONEnhanced = (nodes: Record<string, any>, filename: string = 'mindmap') => {
   const exportData = {
+    version: '2.0',
     metadata: {
-      title: nodes[Object.keys(nodes)[0]]?.text || 'Untitled',
-      exportDate: new Date().toISOString(),
-      version: '1.0',
-      totalNodes: Object.keys(nodes).length
+      exportedAt: new Date().toISOString(),
+      generator: 'Beautiful Mindmap SaaS'
     },
-    structure: nodes,
-    styles: Object.values(nodes).map(node => ({
-      id: node.id,
-      color: node.color,
-      text: node.text
-    }))
+    nodes
   }
 
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+  const jsonString = JSON.stringify(exportData, null, 2)
+  const blob = new Blob([jsonString], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.download = `${filename}.json`
