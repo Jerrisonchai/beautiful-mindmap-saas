@@ -357,9 +357,15 @@ export const applyTemplate = (templateId: string) => {
     delete newNodes[oldId];
   });
   
-  // Update child references
+  // Update child references and set parent IDs
   Object.values(newNodes).forEach((node: any) => {
-    node.children = node.children.map((childId: string) => idMap[childId] || childId);
+    node.children = node.children.map((childId: string) => {
+      const mappedChildId = idMap[childId] || childId;
+      if (newNodes[mappedChildId]) {
+        newNodes[mappedChildId].parentId = node.id;
+      }
+      return mappedChildId;
+    });
   });
   
   return newNodes;

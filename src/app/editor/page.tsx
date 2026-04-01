@@ -17,6 +17,7 @@ interface Node {
   children: string[]
   color: string
   expanded: boolean
+  parentId?: string
 }
 
 const COLORS = [
@@ -131,7 +132,8 @@ export default function MindmapEditor() {
         text: 'New Node',
         children: [],
         color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        expanded: true
+        expanded: true,
+        parentId: parentId
       },
       [parentId]: { ...parent, children: [...parent.children, newNodeId] }
     }
@@ -143,7 +145,7 @@ export default function MindmapEditor() {
   const deleteNode = useCallback((nodeId: string) => {
     if (nodeId === 'root') return
     const node = nodes[nodeId]
-    const parentId = Object.keys(nodes).find(key => nodes[key].children.includes(nodeId))
+    const parentId = node.parentId || Object.keys(nodes).find(key => nodes[key].children.includes(nodeId))
     if (parentId) {
       const newNodes = { ...nodes }
       delete newNodes[nodeId]
